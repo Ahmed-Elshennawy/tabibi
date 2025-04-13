@@ -2,6 +2,7 @@ import 'dart:developer';
 import 'package:dio/dio.dart';
 import 'package:tabibi/core/error/exceptions.dart';
 import 'package:tabibi/core/secrets/app_secrets.dart';
+import 'package:tabibi/core/utils/dio_error_handler.dart';
 import 'package:tabibi/features/auth/data/models/login_response_model.dart';
 
 abstract interface class AuthRemoteDataSource {
@@ -65,14 +66,8 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
 
       return response.data['data']['message'] as String;
     } on DioException catch (e) {
-      if (e.response != null && e.response!.data != null) {
-        final errorData = e.response!.data;
-        if (errorData is Map && errorData.containsKey('errors')) {
-          final errorMessage = errorData['errors'][0]['detail'] ?? e.message;
-          throw ServerException(errorMessage);
-        }
-      }
-      throw ServerException('${e.message}');
+      final errorMessage = DioErrorHandler.handleError(e);
+      throw ServerException(errorMessage);
     } catch (e) {
       throw ServerException(e.toString());
     }
@@ -92,14 +87,8 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
 
       return LoginResponseModel.fromJson(response.data);
     } on DioException catch (e) {
-      if (e.response != null && e.response!.data != null) {
-        final errorData = e.response!.data;
-        if (errorData is Map && errorData.containsKey('errors')) {
-          final errorMessage = errorData['errors'][0]['detail'] ?? e.message;
-          throw ServerException(errorMessage);
-        }
-      }
-      throw ServerException('${e.message}');
+      final errorMessage = DioErrorHandler.handleError(e);
+      throw ServerException(errorMessage);
     } catch (e) {
       throw ServerException(e.toString());
     }

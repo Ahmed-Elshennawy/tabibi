@@ -10,10 +10,11 @@ class LoginResponseModel extends LoginResponse {
   });
 
   factory LoginResponseModel.fromJson(Map<String,  dynamic> json) {
-    return LoginResponseModel( 
-      message: json['message'],
-      user: UserModel.fromJson(json['data']),
-      accessToken: json['access'],
+    final data = json['data'] as Map<String, dynamic>;
+    return LoginResponseModel(
+      message: data['message'] as String,
+      user: UserModel.fromJson(data['data'] as Map<String, dynamic>),
+      accessToken: data['access'] as String,
     );
   }
 }
